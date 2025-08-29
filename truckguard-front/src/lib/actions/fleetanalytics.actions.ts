@@ -1,0 +1,21 @@
+"use server"
+
+import { cookies } from "next/headers"
+
+
+export const getFleetAnalytics = async () => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+    const response = await fetch(`${process.env.BACKENDURL}/Fleetanalytics/analytics`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+    if (!response.ok) {
+        throw new Error("Failed to get fleet analytics")
+    }
+    const data = await response.json()
+
+    return data
+}

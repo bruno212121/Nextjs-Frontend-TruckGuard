@@ -1,103 +1,368 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { Truck, Shield, BarChart3, ArrowRight, Menu, X, Sun, Moon, TrendingUp, Clock } from "lucide-react"
+
+export default function TruckGuardLanding() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Mantenimiento Preventivo",
+      description:
+        "Evita reparaciones costosas con nuestro sistema de alertas inteligente que monitorea filtros, aceite, inyectores, frenos y neumáticos.",
+      color: "text-slate-300",
+      bgColor: "bg-slate-800/50",
+    },
+    {
+      icon: BarChart3,
+      title: "Análisis en Tiempo Real",
+      description:
+        "Obtén métricas detalladas de tu flota con dashboards interactivos que te ayudan a tomar decisiones informadas.",
+      color: "text-slate-300",
+      bgColor: "bg-slate-800/50",
+    },
+    {
+      icon: TrendingUp,
+      title: "Optimización de Costos",
+      description:
+        "Reduce gastos operativos hasta un 30% con nuestro sistema de gestión inteligente de mantenimiento y rutas.",
+      color: "text-slate-300",
+      bgColor: "bg-slate-800/50",
+    },
+    {
+      icon: Clock,
+      title: "Gestión Eficiente",
+      description: "Administra conductores, viajes y vehículos desde una sola plataforma centralizada y fácil de usar.",
+      color: "text-slate-300",
+      bgColor: "bg-slate-800/50",
+    },
+  ]
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800">
+      <header className="border-b border-slate-700 bg-gradient-to-r from-slate-800 to-gray-800 sticky top-0 z-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-xl font-bold text-white">TruckGuard</h1>
+                <p className="text-xs text-slate-300">Gestión inteligente de flota</p>
+              </div>
+            </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-white hover:text-slate-300 transition-colors">
+                Características
+              </a>
+              <a href="#contact" className="text-white hover:text-slate-300 transition-colors">
+                Contacto
+              </a>
+            </nav>
+
+            {/* Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <Link href="/auth/login">
+                <Button variant="ghost" className="text-white hover:bg-slate-700/50">
+                  Iniciar Sesión
+                </Button>
+              </Link>
+              <Link href="/auth/register">
+                <Button className="bg-slate-100 text-slate-800 hover:bg-white">Registrarse</Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-slate-700">
+              <nav className="flex flex-col gap-4">
+                <a href="#features" className="text-white hover:text-slate-300 transition-colors">
+                  Características
+                </a>
+                <a href="#contact" className="text-white hover:text-slate-300 transition-colors">
+                  Contacto
+                </a>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
+                  <Link href="/login">
+                    <Button variant="ghost" className="text-white hover:bg-slate-700/50">
+                      Iniciar Sesión
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="bg-slate-100 text-slate-800 hover:bg-white">Registrarse</Button>
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </header>
+
+      <section className="py-20 lg:py-32 bg-gradient-to-r from-slate-900/80 to-gray-900/60 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Badge className="bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700">
+                  <Shield className="h-3 w-3 mr-1" />
+                  Mantenimiento Inteligente
+                </Badge>
+                <h1 className="text-4xl lg:text-6xl font-bold text-white text-balance leading-tight">
+                  Gestiona tu flota con <span className="text-slate-300">inteligencia</span>
+                </h1>
+                <p className="text-xl text-slate-300 text-pretty leading-relaxed">
+                  TruckGuard revoluciona la gestión de flotas con mantenimiento preventivo automatizado, análisis en
+                  tiempo real y optimización de costos. Evita reparaciones costosas y maximiza la disponibilidad de tus
+                  vehículos.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/register">
+                  <Button size="lg" className="bg-slate-700 text-white hover:bg-slate-600 text-lg px-8">
+                    Comenzar Gratis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/demo">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-lg px-8 border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
+                  >
+                    Ver Demo
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="flex items-center gap-8 pt-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-300">30%</div>
+                  <div className="text-sm text-slate-400">Reducción de costos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-300">95%</div>
+                  <div className="text-sm text-slate-400">Disponibilidad de flota</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-300">24/7</div>
+                  <div className="text-sm text-slate-400">Monitoreo continuo</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="relative z-10 transform hover:scale-105 transition-transform duration-700">
+                <img
+                  src='logo-truckguard.png'
+                  alt="Camión de carga TruckGuard"
+                  className="w-full h-auto max-w-lg mx-auto filter brightness-125 contrast-110 saturate-0 opacity-90 mix-blend-screen"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-700/30 via-gray-600/20 to-slate-800/30 rounded-full blur-3xl transform scale-110 -rotate-12"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-slate-600/40 via-transparent to-gray-700/30 rounded-full blur-2xl transform scale-90 rotate-6"></div>
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-slate-700/20 rounded-full blur-xl"></div>
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-gray-600/30 rounded-full blur-lg"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="py-20 bg-slate-800/90 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4 mb-16">
+            <Badge className="bg-slate-700 text-slate-200 border-slate-600">Características Principales</Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white text-balance">
+              Todo lo que necesitas para gestionar tu flota
+            </h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto text-pretty">
+              Desde mantenimiento preventivo hasta análisis avanzados, TruckGuard te proporciona las herramientas
+              necesarias para optimizar tu operación.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <Card
+                key={index}
+                className="border-slate-700 bg-slate-800/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                <CardHeader className="text-center pb-4">
+                  <div
+                    className={`w-16 h-16 ${feature.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-4`}
+                  >
+                    <feature.icon className={`h-8 w-8 ${feature.color}`} />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-white">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-300 text-center leading-relaxed">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Component Details */}
+          <div className="mt-20 bg-gradient-to-r from-slate-800/80 to-gray-800/60 rounded-2xl p-8 lg:p-12 border border-slate-700">
+            <div className="text-center space-y-4 mb-12">
+              <h3 className="text-2xl lg:text-3xl font-bold text-white">Monitoreo Inteligente de Componentes</h3>
+              <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+                Nuestro sistema supervisa los componentes críticos de tus camiones para prevenir fallos costosos
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+              {[
+                { name: "Filtros", interval: "10,000-15,000 km", icon: "🔧" },
+                { name: "Aceite", interval: "20,000-30,000 km", icon: "🛢️" },
+                { name: "Inyectores", interval: "8,000-10,000 km", icon: "⚡" },
+                { name: "Frenos", interval: "9,000-15,000 km", icon: "🛑" },
+                { name: "Neumáticos", interval: "40,000-50,000 km", icon: "🛞" },
+              ].map((component, index) => (
+                <div key={index} className="text-center p-4 bg-slate-700/50 rounded-xl border border-slate-600">
+                  <div className="text-3xl mb-2">{component.icon}</div>
+                  <h4 className="font-semibold text-white mb-1">{component.name}</h4>
+                  <p className="text-sm text-slate-300">{component.interval}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="py-20 bg-gradient-to-r from-slate-800 to-gray-800 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-3xl mx-auto space-y-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-balance">¿Listo para optimizar tu flota?</h2>
+            <p className="text-xl text-slate-300 text-pretty">
+              Únete a cientos de empresas que ya están ahorrando costos y mejorando la eficiencia de sus flotas con
+              TruckGuard.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-lg px-8 bg-slate-100 text-slate-800 hover:bg-white"
+                >
+                  Comenzar Prueba Gratuita
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 border-slate-400 text-slate-300 hover:bg-slate-700 hover:text-white bg-transparent"
+                >
+                  Contactar Ventas
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="py-12 bg-slate-900/95 backdrop-blur-sm border-t border-slate-700">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Truck className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-bold text-white">TruckGuard</span>
+              </div>
+              <p className="text-slate-300 text-sm">Gestión inteligente de flotas para empresas modernas.</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Producto</h4>
+              <ul className="space-y-2 text-sm text-slate-300">
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Características
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Precios
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Demo
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Empresa</h4>
+              <ul className="space-y-2 text-sm text-slate-300">
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Sobre nosotros
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Contacto
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Soporte</h4>
+              <ul className="space-y-2 text-sm text-slate-300">
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Documentación
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Centro de ayuda
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-slate-300 transition-colors">
+                    Estado del servicio
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-700 mt-8 pt-8 text-center">
+            <p className="text-slate-300 text-sm">© 2025 TruckGuard. Todos los derechos reservados.</p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }

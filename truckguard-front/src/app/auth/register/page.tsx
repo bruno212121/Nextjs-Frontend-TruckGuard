@@ -46,8 +46,8 @@ export default function Register() {
         setIsLoading(true)
         try {
             // Aquí iría la lógica de registro
-           const response = await register(values)
-           console.log("Respuesta del servidor:", response)
+            const response = await register(values)
+            console.log("Respuesta del servidor:", response)
 
         } catch (error) {
             console.error("Error en el registro:", error)
@@ -61,14 +61,16 @@ export default function Register() {
             <div className="w-full max-w-md space-y-6">
                 {/* Header con logo */}
                 <div className="text-center space-y-2">
-                    <div className="flex items-center justify-center space-x-2">
-                        <div className="p-2 bg-blue-600 rounded-lg">
-                            <Truck className="h-8 w-8 text-white" />
+                    <Link href="/" className="inline-block">
+                        <div className="flex items-center justify-center space-x-2 cursor-pointer hover:scale-105 transition-transform duration-200">
+                            <div className="p-2 bg-blue-600 rounded-lg">
+                                <Truck className="h-8 w-8 text-white" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                TruckGuard
+                            </h1>
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            TruckGuard
-                        </h1>
-                    </div>
+                    </Link>
                     <p className="text-gray-600 dark:text-gray-400">
                         Gestión inteligente de flota
                     </p>
