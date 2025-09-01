@@ -45,7 +45,7 @@ export default function SidebarClient() {
             label: 'Gestionar Viajes',
             icon: <MapPin />,
             // route: /${serverData.username}
-            route: '/trips'
+            route: '/trips'  
         },
         {
             label: 'Gestionar Camiones',
