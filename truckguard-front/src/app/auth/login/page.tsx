@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Truck, Eye, EyeOff, Shield } from "lucide-react"
 import { login } from "@/lib/actions/auth.actions"
-import Link from "next/link"
+import Link from "next/link" 
+import { useRouter } from "next/navigation" 
 
 const loginSchema = z.object({
     email: z.string().email("Por favor ingresa un email válido"),
@@ -23,7 +24,7 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-
+    const router = useRouter()
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -39,6 +40,8 @@ export default function Login() {
             console.log("Datos del formulario:", values)
             const response = await login(values.email, values.password)
             console.log("Respuesta del servidor:", response)
+            
+            router.push('/dashboard')
 
             // Redirigir al dashboard después del login exitoso
             // router.push('/dashboard')
@@ -54,14 +57,16 @@ export default function Login() {
             <div className="w-full max-w-md space-y-6">
                 {/* Header con logo */}
                 <div className="text-center space-y-2">
-                    <div className="flex items-center justify-center space-x-2">
-                        <div className="p-2 bg-blue-600 rounded-lg">
-                            <Truck className="h-8 w-8 text-white" />
+                    <Link href="/" className="inline-block">
+                        <div className="flex items-center justify-center space-x-2 cursor-pointer hover:scale-105 transition-transform duration-200">
+                            <div className="p-2 bg-blue-600 rounded-lg">
+                                <Truck className="h-8 w-8 text-white" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                TruckGuard
+                            </h1>
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            TruckGuard
-                        </h1>
-                    </div>
+                    </Link>
                     <p className="text-gray-600 dark:text-gray-400">
                         Gestión inteligente de flota
                     </p>
@@ -176,15 +181,15 @@ export default function Login() {
                             <p className="text-sm text-gray-600 dark:text-gray-400">
                                 ¿No tienes una cuenta?{" "}
                                 <Link href="/auth/register">
-                                <Button
-                                    type="button"
-                                    variant="link"
-                                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-0 h-auto"
-                                >
-                                    Registrarse
-                                </Button>
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-0 h-auto"
+                                    >
+                                        Registrarse
+                                    </Button>
                                 </Link>
-    
+
                             </p>
                         </div>
                     </CardContent>
