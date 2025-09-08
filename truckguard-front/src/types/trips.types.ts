@@ -17,7 +17,7 @@ export interface Trip {
     trip_id: number
     origin: string
     destination: string
-    status: "Pending" | "Active" | "Completed"
+    status: "Pending" | "In Course" | "Completed"
     date: string
     created_at: string
     updated_at: string
@@ -41,16 +41,16 @@ export interface CreateTripRequest {
     destination: string
     truck_id: number
     driver_id: number
-    status: "Pending" | "Active" | "Completed"
+    status: "Pending" | "In Course" | "Completed"
     date: string
 }
 
 export interface UpdateTripRequest {
     origin?: string
-    destination?: string 
+    destination?: string
     truck_id?: number
     driver_id?: number
-    status?: "Pending" | "Active" | "Completed"
+    status?: "Pending" | "In Course" | "Completed"
     date?: string
 }
 
