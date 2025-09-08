@@ -37,9 +37,12 @@ import {
     ChevronsRight,
 } from "lucide-react"
 import { Trip } from "@/types/trips.types"
-import { getTrips, updateTrips, deleteTrips } from "@/lib/actions/trips.actions"
+import { getTrips, updateTrips, deleteTrips, activateTrips } from "@/lib/actions/trips.actions"
+import Link from "next/link"
+import { Toaster, toast } from "react-hot-toast"
 
 export default function TripsPage() {
+    const ENABLE_DELETE = process.env.NEXT_PUBLIC_ENABLE_DELETE === "true"
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [tripToDelete, setTripToDelete] = useState<number | null>(null)
 
@@ -90,11 +93,11 @@ export default function TripsPage() {
                         Completado
                     </Badge>
                 )
-            case "Active":
+            case "In Course":
                 return (
                     <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
                         <PlayCircle className="h-3 w-3 mr-1" />
-                        Activo
+                        En curso
                     </Badge>
                 )
             case "Pending":
@@ -111,19 +114,47 @@ export default function TripsPage() {
 
     const handleStatusChange = async (tripId: number, newStatus: string) => {
         try {
-            console.log(`Cambiando estado del viaje ${tripId} a ${newStatus}`)
-            await updateTrips(tripId)
-            await loadTrips() // Recargar datos
+            await toast.promise(
+                updateTrips(tripId),
+                {
+                    loading: "Completando viaje...",
+                    success: "Viaje completado",
+                    error: "Error completando el viaje",
+                }
+            )
+            await loadTrips()
         } catch (error) {
             console.error("Error updating trip status:", error)
         }
     }
 
+    const handleActivate = async (tripId: number) => {
+        try {
+            await toast.promise(
+                activateTrips(tripId),
+                {
+                    loading: "Activando viaje...",
+                    success: "Viaje en curso",
+                    error: "Error activando el viaje",
+                }
+            )
+            await loadTrips()
+        } catch (error) {
+            console.error("Error activating trip:", error)
+        }
+    }
+
     const handleDeleteTrip = async (tripId: number) => {
         try {
-            console.log(`Eliminando viaje ${tripId}`)
-            await deleteTrips(tripId)
-            await loadTrips() // Recargar datos
+            await toast.promise(
+                deleteTrips(tripId),
+                {
+                    loading: "Eliminando viaje...",
+                    success: "Viaje eliminado",
+                    error: "Error eliminando el viaje",
+                }
+            )
+            await loadTrips()
         } catch (error) {
             console.error("Error deleting trip:", error)
         }
@@ -143,7 +174,7 @@ export default function TripsPage() {
                     key="activate"
                     size="sm"
                     className="bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => handleStatusChange(trip.trip_id, "Active")}
+                    onClick={() => handleActivate(trip.trip_id)}
                 >
                     <PlayCircle className="h-3 w-3 mr-1" />
                     Activar
@@ -151,7 +182,7 @@ export default function TripsPage() {
             )
         }
 
-        if (trip.status === "Active") {
+        if (trip.status === "In Course") {
             buttons.push(
                 <Button
                     key="complete"
@@ -234,6 +265,7 @@ export default function TripsPage() {
 
     return (
         <div className="p-6 w-full">
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header con título y botón crear */}
                 <div className="flex items-center justify-between">
@@ -243,11 +275,12 @@ export default function TripsPage() {
                             Total de viajes: {tripsData.total} | Página {currentPage} de {totalPages} | {currentTrips.length} viajes en esta página
                         </p>
                     </div>
-
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Crear Viaje
-                    </Button>
+                    <Link href="/trips/create">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Crear Viaje
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* Filtros */}
@@ -279,7 +312,7 @@ export default function TripsPage() {
                             >
                                 <option value="all">Todos los estados</option>
                                 <option value="Pending">Pendiente</option>
-                                <option value="Active">Activo</option>
+                                <option value="In Course">En curso</option>
                                 <option value="Completed">Completado</option>
                             </select>
 
@@ -389,7 +422,7 @@ export default function TripsPage() {
                                         {getActionButtons(trip)}
                                     </div>
 
-                                    {trip.status === "Completed" && (
+                                    {trip.status === "Completed" && ENABLE_DELETE && (
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -508,38 +541,38 @@ export default function TripsPage() {
                 )}
             </div>
 
-            {/* AlertDialog para eliminar viaje */ }
-    <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-red-600" />
-                    ¿Eliminar viaje?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                    <strong>¡Atención!</strong> Si eliminas este viaje se perderán las métricas asociadas en
-                    el dashboard. Esta acción no se puede deshacer.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
-                    Cancelar
-                </AlertDialogCancel>
-                <AlertDialogAction
-                    onClick={() => {
-                        if (tripToDelete) {
-                            handleDeleteTrip(tripToDelete)
-                            setDeleteDialogOpen(false)
-                            setTripToDelete(null)
-                        }
-                    }}
-                    variant="destructive"
-                >
-                    Eliminar Viaje
-                </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+            {/* AlertDialog para eliminar viaje */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-red-600" />
+                            ¿Eliminar viaje?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            <strong>¡Atención!</strong> Si eliminas este viaje se perderán las métricas asociadas en
+                            el dashboard. Esta acción no se puede deshacer.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+                            Cancelar
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (tripToDelete) {
+                                    handleDeleteTrip(tripToDelete)
+                                    setDeleteDialogOpen(false)
+                                    setTripToDelete(null)
+                                }
+                            }}
+                            variant="destructive"
+                        >
+                            Eliminar Viaje
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div >
     )
 }

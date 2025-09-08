@@ -20,6 +20,8 @@ import {
 import { Trip } from "@/types/trips.types"
 import { getTrip } from "@/lib/actions/trips.actions"
 import Link from "next/link"
+import GoogleMaps from "@/components/google/google-maps"
+import { useJsApiLoader } from "@react-google-maps/api"
 
 interface TripDetailsPageProps {
     params: {
@@ -31,6 +33,14 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
     const [trip, setTrip] = useState<Trip | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [distanceKm, setDistanceKm] = useState<number | null>(null)
+    const [durationText, setDurationText] = useState<string | null>(null)
+
+    const { isLoaded } = useJsApiLoader({
+        id: "google-map-script",
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: ["places"],
+    })
 
     useEffect(() => {
         loadTripDetails()
@@ -240,30 +250,69 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Mapa de ruta */}
+                    {/* Métricas de ruta (en lugar del mapa dentro de la grilla) */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <MapPin className="h-5 w-5" />
-                                Mapa de Ruta
+                                <Clock className="h-5 w-5" />
+                                Métricas de la Ruta
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="w-full h-48 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-600 flex items-center justify-center relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-emerald-500/10"></div>
-                                <div className="text-center z-10">
-                                    <Navigation className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Ruta: {trip.origin} → {trip.destination}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Mapa interactivo se cargará aquí
-                                    </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                    <div className="flex items-center gap-3">
+                                        <Navigation className="h-5 w-5 text-blue-600" />
+                                        <div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Distancia</p>
+                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                {distanceKm !== null ? `${distanceKm} km` : "Calculando..."}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                    <div className="flex items-center gap-3">
+                                        <Clock className="h-5 w-5 text-purple-600" />
+                                        <div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Duración</p>
+                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                {durationText ?? "Calculando..."}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Mapa de Ruta (pleno ancho) */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5" />
+                            Mapa de Ruta
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {trip.origin && trip.destination && (
+                            <div className="rounded-lg overflow-hidden border border-slate-700">
+                                <GoogleMaps
+                                    isLoaded={isLoaded}
+                                    origin={trip.origin}
+                                    destination={trip.destination}
+                                    height={320}
+                                    zoom={12}
+                                    onRouteComputed={({ distanceMeters, durationText }) => {
+                                        setDistanceKm(distanceMeters ? Math.round(distanceMeters / 100) / 10 : null)
+                                        setDurationText(durationText ?? null)
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Información adicional */}
                 <Card>
