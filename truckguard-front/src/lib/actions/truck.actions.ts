@@ -1,7 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { TruckResponse, SingleTruckResponse } from "@/types/trucks.types"
+import { TruckResponse, SingleTruckResponse, Truck } from "@/types/trucks.types"
 
 
 export const getTrucks = async (page: number = 1, per_page: number = 5): Promise<TruckResponse> => {
@@ -45,5 +45,81 @@ export const getTruck = async (id: number): Promise<SingleTruckResponse> => {
     }
 
     return response.json()
+}
+
+/**
+ * POST /Trucks/new
+ * payload: datos del camión (y opcional driver_id)
+ */
+
+export const createTruck = async (playload: Partial<Truck>): Promise<Truck> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Trucks/new`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(playload)
+    })
+
+    if (!response.ok) {
+        throw new Error("Failed to create truck")
+    }
+    const data = await response.json()
+    return data
+}
+
+/**
+ * PUT /Trucks/{id}/assign
+ * body: { driver_id: number }
+ */
+
+export const assignTruck = async (id: number, driver_id: number): Promise<Truck> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Trucks/${id}/assign`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ driver_id })
+    })
+
+    if (!response.ok) {
+        throw new Error("Failed to assign truck")
+    }
+    const data = await response.json()
+    return data
+}
+
+/**
+ * PUT /Trucks/{id}/edit
+ * Se usa para actualizar propiedades del camión (ej: status, color, mileage, etc.)
+ * Ejemplo para cambiar estado: editTruck(id, { status: "Mantenimiento" })
+ */
+
+export const editTruck = async (id: number, playload: Partial<Truck>): Promise<Truck> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Trucks/${id}/edit`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(playload)
+    })
+
+    if (!response.ok) {
+        throw new Error("Failed to edit truck")
+    }
+    const data = await response.json()
+    return data
 }
 
