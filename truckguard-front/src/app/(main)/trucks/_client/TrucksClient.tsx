@@ -3,11 +3,12 @@
 
 import { useMemo, useState } from "react";
 import type { Truck, Driver } from "@/types/trucks.types";
-import { assignTruck, editTruck, createTruck } from "@/lib/actions/truck.actions";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { assignTruck, editTruck, unassignTruck } from "@/lib/actions/truck.actions";
 import TruckCard from "@/components/trucks/TruckCard";
 import FiltersBar from "@/components/trucks/FiltersBar";
+import { useRouter } from "next/navigation";
+
+
 
 type Props = {
   initialTrucks: Truck[];
@@ -18,6 +19,7 @@ export default function TrucksClient({
   initialTrucks,
   initialAvailableDrivers,
 }: Props) {
+  const router = useRouter();
   const [trucks, setTrucks] = useState<Truck[]>(initialTrucks);
   const [drivers, setDrivers] = useState<Driver[]>(initialAvailableDrivers);
   const [search, setSearch] = useState("");
@@ -56,45 +58,54 @@ export default function TrucksClient({
     setTrucks((curr) =>
       curr.map((t) => (t.truck_id === truck_id ? { ...t, driver } : t))
     );
+
     try {
       await assignTruck(truck_id, driver_id);
-      // opcional: remover de la lista de disponibles
       setDrivers((ds) => ds.filter((d) => d.id !== driver_id));
     } catch (e) {
-      setTrucks(prev);
       console.error("assignDriver error:", e);
+      setTrucks(prev);
     }
   };
 
-  const handleCreateTruck = async () => {
-    // DEMO mínima: crea un camión con datos fijos (luego lo movemos a <CreateTruckSheet />)
-    const payload = {
-      plate: `TEMP-${Math.floor(Math.random() * 10000)}`,
-      brand: "Marca",
-      model: "Modelo",
-      year: "2024",
-      color: "Blanco",
-      mileage: 0,
-      status: "Activo" as const,
-    };
+  const handleNavigateToCreate = () => {
+    router.push("/trucks/create");
+  };
+
+  const handleRemoveDriver = async (truck_id: number) => {
+    const truck = trucks.find(t => t.truck_id === truck_id);
+    if (!truck?.driver) return;
+
+    const prev = [...trucks];
+    setTrucks((curr) =>
+      curr.map((t) => (t.truck_id === truck_id ? { ...t, driver: null } : t))
+    );
+
     try {
-      const res = await createTruck(payload as any);
-      const created = (res.trucks ?? res) as Truck; // depende de tu API
-      setTrucks((curr) => [...curr, created]);
+      await unassignTruck(truck_id);
+      // Agregar el conductor de vuelta a la lista de disponibles
+      if (truck.driver) {
+        setDrivers((ds) => [...ds, truck.driver!]);
+      }
     } catch (e) {
-      console.error("createTruck error:", e);
+      setTrucks(prev);
+      console.error("removeDriver error:", e);
     }
+  };
+
+  const handleNavigateToDetails = (truck_id: number) => {
+    router.push(`/trucks/${truck_id}`);
   };
 
   // ---- Render mínimo (temporal) ----
   return (
-    <div className="p-6 h-screen space-y-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800">
+    <div className="p-6 h-full space-y-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800">
       <FiltersBar
         search={search}
         onSearch={setSearch}
         status={statusFilter}
         onStatusChange={setStatusFilter}
-        onCreate={handleCreateTruck}
+        onCreate={handleNavigateToCreate}
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -105,7 +116,9 @@ export default function TrucksClient({
             availableDrivers={drivers}
             onChangeStatus={handleUpdateStatus}
             onAssignDriver={handleAssignDriver}
-          	/>
+            onRemoveDriver={handleRemoveDriver}
+            onNavigateToDetails={handleNavigateToDetails}
+          />
         ))}
       </div>
 

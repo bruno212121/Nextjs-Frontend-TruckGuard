@@ -1,7 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { TruckResponse, SingleTruckResponse, Truck } from "@/types/trucks.types"
+import { TruckResponse, SingleTruckResponse, Truck, TruckComponentsStatusResponse, TruckMaintenanceHistoryResponse } from "@/types/trucks.types"
 
 
 export const getTrucks = async (page: number = 1, per_page: number = 5): Promise<TruckResponse> => {
@@ -14,12 +14,12 @@ export const getTrucks = async (page: number = 1, per_page: number = 5): Promise
             "Authorization": `Bearer ${token}`,
             "Accept": "application/json",
         },
-        cache: "no-store", 
+        cache: "no-store",
     })
 
     if (!response.ok) {
         const msg = await response.text().catch(() => "Failed to get trucks")
-        throw new Error("Failed to get trucks ($(response.status) - ${msg})") 
+        throw new Error("Failed to get trucks ($(response.status) - ${msg})")
     }
 
     const data = (await response.json()) as TruckResponse
@@ -27,7 +27,7 @@ export const getTrucks = async (page: number = 1, per_page: number = 5): Promise
         throw new Error("API shape inesperada: se esperaba { trucks: Truck[] }")
     }
 
-    return data 
+    return data
 }
 
 export const getTruck = async (id: number): Promise<SingleTruckResponse> => {
@@ -98,6 +98,29 @@ export const assignTruck = async (id: number, driver_id: number): Promise<Truck>
 }
 
 /**
+ * PUT /Trucks/{id}/unassign
+ * Remueve el conductor asignado al camión
+ */
+export const unassignTruck = async (id: number): Promise<any> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Trucks/${id}/unassign`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    })
+
+    if (!response.ok) {
+        throw new Error("Failed to unassign truck")
+    }
+    const data = await response.json()
+    return data
+}
+
+/**
  * PUT /Trucks/{id}/edit
  * Se usa para actualizar propiedades del camión (ej: status, color, mileage, etc.)
  * Ejemplo para cambiar estado: editTruck(id, { status: "Mantenimiento" })
@@ -119,6 +142,58 @@ export const editTruck = async (id: number, playload: Partial<Truck>): Promise<T
     if (!response.ok) {
         throw new Error("Failed to edit truck")
     }
+    const data = await response.json()
+    return data
+}
+
+/**
+ * GET /Trucks/{truckid}/components-status
+ * Obtiene el estado en tiempo real de todos los componentes de un camión específico
+ */
+export const getTruckComponentsStatus = async (truckId: number): Promise<TruckComponentsStatusResponse> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Trucks/${truckId}/components-status`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    if (!response.ok) {
+        const msg = await response.text().catch(() => "Failed to get truck components status")
+        throw new Error(`Failed to get truck components status (${response.status} - ${msg})`)
+    }
+
+    const data = await response.json()
+    return data
+}
+
+/**
+ * GET /Maintenance/{truckid}/components
+ * Obtiene el historial completo de mantenimientos de un camión específico
+ */
+export const getTruckMaintenanceHistory = async (truckId: number): Promise<TruckMaintenanceHistoryResponse> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Maintenance/${truckId}/components`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    if (!response.ok) {
+        const msg = await response.text().catch(() => "Failed to get truck maintenance history")
+        throw new Error(`Failed to get truck maintenance history (${response.status} - ${msg})`)
+    }
+
     const data = await response.json()
     return data
 }
