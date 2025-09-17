@@ -45,13 +45,17 @@ SelectTrigger.displayName = "SelectTrigger"
 
 const SelectValue = React.forwardRef<
     HTMLSpanElement,
-    React.HTMLAttributes<HTMLSpanElement>
->(({ className, ...props }, ref) => (
+    React.HTMLAttributes<HTMLSpanElement> & {
+        placeholder?: string
+    }
+>(({ className, placeholder, ...props }, ref) => (
     <span
         ref={ref}
         className={`block truncate ${className || ''}`}
         {...props}
-    />
+    >
+        {placeholder}
+    </span>
 ))
 SelectValue.displayName = "SelectValue"
 

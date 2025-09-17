@@ -9,8 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Settings, Edit, UserMinus, UserPlus } from "lucide-react";
 
-import StatusSelect from "./StatusSelect";
-import DriverInfo from "./DriverInfo";
+
 import AssignDriverDialog from "./AssignDriverSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
@@ -31,10 +30,11 @@ type Props = {
     onChangeStatus: (truckId: number, newStatus: "Activo" | "Mantenimiento" | "Inactivo") => void;
     onAssignDriver: (truckId: number, driverId: number) => void;
     onRemoveDriver: (truckId: number) => void;
+    onNavigateToDetails: (truckId: number) => void;
 };
 
 export default function TruckCard({
-    truck, availableDrivers, onChangeStatus, onAssignDriver, onRemoveDriver,
+    truck, availableDrivers, onChangeStatus, onAssignDriver, onRemoveDriver, onNavigateToDetails,
 }: Props) {
     const mileage = useMemo(() => Number(truck.mileage).toLocaleString(), [truck.mileage]);
 
@@ -77,8 +77,9 @@ export default function TruckCard({
 
                 {/* Acciones */}
                 <div className="flex flex-wrap gap-2 pt-2">
-                    <Link href={`/truck/${truck.truck_id}`}>
+                    <Link href={`/trucks/${truck.truck_id}`} onClick={() => onNavigateToDetails(truck.truck_id)}>
                         <Button
+                            onClick={() => onNavigateToDetails(truck.truck_id)}
                             size="sm"
                             variant="outline"
                             className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"

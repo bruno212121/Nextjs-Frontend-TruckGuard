@@ -26,62 +26,17 @@ export default function AssignDriverDialog({
     const [selectedId, setSelectedId] = useState<string>(initialDriverId ? String(initialDriverId) : "");
 
     return (
-        // <Dialog>
-        //   <DialogTrigger asChild>{trigger}</DialogTrigger>
-
-        //   <DialogContent className="bg-slate-800 border-slate-700">
-        //     <DialogHeader>
-        //       <DialogTitle className="text-white">
-        //         {initialDriverId ? "Cambiar Conductor" : "Asignar Conductor"}
-        //       </DialogTitle>
-        //       <DialogDescription className="text-slate-300">
-        //         Selecciona un conductor para {plate}
-        //       </DialogDescription>
-        //     </DialogHeader>
-
-        //     <div className="space-y-4">
-        //       <Select value={selectedId} onValueChange={setSelectedId}>
-        //         <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-        //           <SelectValue placeholder="Seleccionar conductor" />
-        //         </SelectTrigger>
-        //         <SelectContent className="bg-slate-700 border-slate-600">
-        //           {drivers.map((d) => (
-        //             <SelectItem key={d.id} value={String(d.id)} className="text-white hover:bg-slate-600">
-        //               {d.name} {d.surname}
-        //             </SelectItem>
-        //           ))}
-        //         </SelectContent>
-        //       </Select>
-
-        //       <Button
-        //         disabled={!selectedId}
-        //         onClick={() => onConfirm(Number(selectedId))}
-        //         className="w-full bg-blue-600 hover:bg-blue-700"
-        //       >
-        //         Confirmar
-        //       </Button>
-        //     </div>
-        //   </DialogContent>
-        // </Dialog>
         <Dialog>
             <DialogTrigger asChild>
-                <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                    onClick={() => {
-                        // setEditingTruck(truck.truck_id)
-                        // setSelectedDriver(truck.driver?.id.toString() || "")
-                    }}
-                >
-                    <Edit className="h-3 w-3" />
-                </Button>
+                {trigger}
             </DialogTrigger>
             <DialogContent className="bg-slate-800 border-slate-700">
                 <DialogHeader>
-                    <DialogTitle className="text-white">Cambiar Conductor</DialogTitle>
+                    <DialogTitle className="text-white">
+                        {initialDriverId ? "Cambiar Conductor" : "Asignar Conductor"}
+                    </DialogTitle>
                     <DialogDescription className="text-slate-300">
-                        Selecciona un nuevo conductor para {plate}
+                        Selecciona un conductor para {plate}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
