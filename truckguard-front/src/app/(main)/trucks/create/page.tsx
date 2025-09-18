@@ -10,6 +10,8 @@ import SuccessView from "./_components/SuccessView";
 import type { NewTruckForm, TruckComponentForm } from "./_components/types";
 import { createTruck } from "@/lib/actions/truck.actions";
 
+
+
 export default function CreateTruckPage() {
     // estados
     const [isCreated, setIsCreated] = useState(false);
@@ -158,6 +160,8 @@ export default function CreateTruckPage() {
         setErrors({});
         setCreateError(null);
     };
+
+ 
 
     if (isCreated && createdTruck) {
         return (

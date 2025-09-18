@@ -25,6 +25,17 @@ export const login = async (email: string, password: string) => {
     }
 }
 
+export const logout = async () => {
+    try {
+        const cookieStore = await cookies()
+        cookieStore.delete("token")
+        return { success: true }
+    } catch (error) {
+        console.error("Error al cerrar sesión:", error)
+        throw error
+    }
+}
+
 export const register = async (registerDto: RegisterDto) => {
     try {
         const response = await fetch(`${process.env.BACKENDURL}/Auth/register`, {

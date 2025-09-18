@@ -75,14 +75,13 @@ export default function TruckCard({
                     </div>
                 )}
 
-                {/* Acciones */}
                 <div className="flex flex-wrap gap-2 pt-2">
                     <Link href={`/trucks/${truck.truck_id}`} onClick={() => onNavigateToDetails(truck.truck_id)}>
                         <Button
                             onClick={() => onNavigateToDetails(truck.truck_id)}
                             size="sm"
                             variant="outline"
-                            className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                            className="text-blue-400 border-blue-700 hover:bg-blue-900/30 hover:text-white bg-transparent"
                         >
                             <Settings className="h-3 w-3 mr-1" />
                             Ver Detalles

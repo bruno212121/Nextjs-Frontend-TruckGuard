@@ -22,6 +22,7 @@ import { getTrip } from "@/lib/actions/trips.actions"
 import Link from "next/link"
 import GoogleMaps from "@/components/google/google-maps"
 import { useJsApiLoader } from "@react-google-maps/api"
+import LoadingSpinner from "@/components/ui/loading-spinner"
 
 interface TripDetailsPageProps {
     params: {
@@ -64,21 +65,21 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
         switch (status) {
             case "Completed":
                 return (
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Completado
                     </Badge>
                 )
             case "Active":
                 return (
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                    <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         <PlayCircle className="h-3 w-3 mr-1" />
                         Activo
                     </Badge>
                 )
             case "Pending":
                 return (
-                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+                    <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30">
                         <AlertCircle className="h-3 w-3 mr-1" />
                         Pendiente
                     </Badge>
@@ -89,11 +90,7 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
     }
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-            </div>
-        )
+        return <LoadingSpinner message="Cargando página..." size="lg" />
     }
 
     if (error || !trip) {
@@ -101,10 +98,10 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
             <div className="p-6 w-full">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-2xl font-bold text-white mb-4">
                             Error al cargar el viaje
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        <p className="text-slate-300 mb-6">
                             {error || "No se encontró el viaje"}
                         </p>
                         <Link href="/trips">
@@ -120,22 +117,22 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
     }
 
     return (
-        <div className="p-6 w-full">
+        <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 min-h-screen">
             <div className="max-w-4xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/trips">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="bg-slate-800/50 border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Volver
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-3xl font-bold text-white">
                                 Viaje #{trip.trip_id}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-slate-300">
                                 Detalles completos del viaje
                             </p>
                         </div>
@@ -146,30 +143,30 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                 {/* Información principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Detalles del viaje */}
-                    <Card>
+                    <Card className="bg-slate-800/50 border-slate-700">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-white">
                                 <FileText className="h-5 w-5" />
                                 Información del Viaje
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* Ruta */}
-                            <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <Navigation className="h-5 w-5 text-blue-600" />
+                            <div className="flex items-center gap-3 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                                <Navigation className="h-5 w-5 text-blue-400" />
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-medium text-white">
                                         {trip.origin} → {trip.destination}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">Ruta del viaje</p>
+                                    <p className="text-sm text-slate-400">Ruta del viaje</p>
                                 </div>
                             </div>
 
                             {/* Fecha */}
-                            <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                <Calendar className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-center gap-3 p-3 bg-purple-500/20 border border-purple-500/30 rounded-lg">
+                                <Calendar className="h-5 w-5 text-purple-400" />
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-medium text-white">
                                         {new Date(trip.date).toLocaleDateString("es-ES", {
                                             weekday: "long",
                                             year: "numeric",
@@ -177,7 +174,7 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                                             day: "numeric"
                                         })}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-slate-400">
                                         {new Date(trip.date).toLocaleTimeString("es-ES", {
                                             hour: "2-digit",
                                             minute: "2-digit"
@@ -187,13 +184,13 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                             </div>
 
                             {/* Estado */}
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <Clock className="h-5 w-5 text-gray-600" />
+                            <div className="flex items-center gap-3 p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg">
+                                <Clock className="h-5 w-5 text-slate-400" />
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-medium text-white">
                                         Estado: {trip.status}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-slate-400">
                                         Última actualización: {new Date(trip.updated_at).toLocaleString("es-ES")}
                                     </p>
                                 </div>
@@ -202,21 +199,21 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                     </Card>
 
                     {/* Información del camión */}
-                    <Card>
+                    <Card className="bg-slate-800/50 border-slate-700">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-white">
                                 <Truck className="h-5 w-5" />
                                 Información del Camión
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-                                <Truck className="h-5 w-5 text-emerald-600" />
+                            <div className="flex items-center gap-3 p-3 bg-emerald-500/20 border border-emerald-500/30 rounded-lg">
+                                <Truck className="h-5 w-5 text-emerald-400" />
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-medium text-white">
                                         {trip.truck.plate}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-slate-400">
                                         {trip.truck.brand} {trip.truck.model}
                                     </p>
                                 </div>
@@ -225,24 +222,24 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                     </Card>
 
                     {/* Información del conductor */}
-                    <Card>
+                    <Card className="bg-slate-800/50 border-slate-700">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-white">
                                 <User className="h-5 w-5" />
                                 Información del Conductor
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
-                                <User className="h-5 w-5 text-amber-600" />
+                            <div className="flex items-center gap-3 p-3 bg-amber-500/20 border border-amber-500/30 rounded-lg">
+                                <User className="h-5 w-5 text-amber-400" />
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-medium text-white">
                                         {trip.driver.name} {trip.driver.surname}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-slate-400">
                                         {trip.driver.email}
                                     </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-slate-400">
                                         Tel: {trip.driver.phone}
                                     </p>
                                 </div>
@@ -251,32 +248,32 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                     </Card>
 
                     {/* Métricas de ruta (en lugar del mapa dentro de la grilla) */}
-                    <Card>
+                    <Card className="bg-slate-800/50 border-slate-700">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-white">
                                 <Clock className="h-5 w-5" />
                                 Métricas de la Ruta
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                <div className="p-4 rounded-lg border border-slate-700 bg-slate-800/50">
                                     <div className="flex items-center gap-3">
-                                        <Navigation className="h-5 w-5 text-blue-600" />
+                                        <Navigation className="h-5 w-5 text-blue-400" />
                                         <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">Distancia</p>
-                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            <p className="text-sm text-slate-400">Distancia</p>
+                                            <p className="text-xl font-semibold text-white">
                                                 {distanceKm !== null ? `${distanceKm} km` : "Calculando..."}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                <div className="p-4 rounded-lg border border-slate-700 bg-slate-800/50">
                                     <div className="flex items-center gap-3">
-                                        <Clock className="h-5 w-5 text-purple-600" />
+                                        <Clock className="h-5 w-5 text-purple-400" />
                                         <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">Duración</p>
-                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            <p className="text-sm text-slate-400">Duración</p>
+                                            <p className="text-xl font-semibold text-white">
                                                 {durationText ?? "Calculando..."}
                                             </p>
                                         </div>
@@ -288,9 +285,9 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                 </div>
 
                 {/* Mapa de Ruta (pleno ancho) */}
-                <Card>
+                <Card className="bg-slate-800/50 border-slate-700">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-white">
                             <MapPin className="h-5 w-5" />
                             Mapa de Ruta
                         </CardTitle>
@@ -315,25 +312,25 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                 </Card>
 
                 {/* Información adicional */}
-                <Card>
+                <Card className="bg-slate-800/50 border-slate-700">
                     <CardHeader>
-                        <CardTitle>Información Adicional</CardTitle>
+                        <CardTitle className="text-white">Información Adicional</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
-                                <p className="font-medium text-gray-900 dark:text-white">ID del Viaje</p>
-                                <p className="text-gray-600 dark:text-gray-400">#{trip.trip_id}</p>
+                                <p className="font-medium text-white">ID del Viaje</p>
+                                <p className="text-slate-400">#{trip.trip_id}</p>
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900 dark:text-white">Creado</p>
-                                <p className="text-gray-600 dark:text-gray-400">
+                                <p className="font-medium text-white">Creado</p>
+                                <p className="text-slate-400">
                                     {new Date(trip.created_at).toLocaleString("es-ES")}
                                 </p>
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900 dark:text-white">Actualizado</p>
-                                <p className="text-gray-600 dark:text-gray-400">
+                                <p className="font-medium text-white">Actualizado</p>
+                                <p className="text-slate-400">
                                     {new Date(trip.updated_at).toLocaleString("es-ES")}
                                 </p>
                             </div>

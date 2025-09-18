@@ -74,6 +74,7 @@ export default async function TruckDetailPage({ params }: Props) {
         cost: m.cost,
     }));
 
+
     return (
         <main className="flex-1 overflow-auto p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 min-h-screen">
             <div className="max-w-6xl mx-auto space-y-6">

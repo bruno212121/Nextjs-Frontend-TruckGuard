@@ -11,10 +11,10 @@ export default function DashboardHeader({ lastUpdated }: DashboardHeaderProps) {
     return (
         <div className="flex items-center justify-between mb-6">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-3xl font-bold text-white">
                     📊 Métricas en Tiempo Real
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-slate-300 mt-1">
                     Última actualización: {new Date(lastUpdated).toLocaleString("es-ES")}
                 </p>
             </div>

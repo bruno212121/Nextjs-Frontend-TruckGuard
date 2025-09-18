@@ -40,6 +40,7 @@ import { Trip } from "@/types/trips.types"
 import { getTrips, updateTrips, deleteTrips, activateTrips } from "@/lib/actions/trips.actions"
 import Link from "next/link"
 import { Toaster, toast } from "react-hot-toast"
+import LoadingSpinner from "@/components/ui/loading-spinner"
 
 export default function TripsPage() {
     const ENABLE_DELETE = process.env.NEXT_PUBLIC_ENABLE_DELETE === "true"
@@ -256,22 +257,18 @@ export default function TripsPage() {
     }
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-            </div>
-        )
+        return <LoadingSpinner message="Cargando página..." size="lg" />
     }
 
     return (
-        <div className="p-6 w-full">
+        <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 min-h-screen">
             <Toaster position="top-center" reverseOrder={false} />
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header con título y botón crear */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-balance">🚛 Gestión de Viajes</h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
+                        <h2 className="text-3xl font-bold text-white">🚛 Gestión de Viajes</h2>
+                        <p className="text-slate-300 mt-1">
                             Total de viajes: {tripsData.total} | Página {currentPage} de {totalPages} | {currentTrips.length} viajes en esta página
                         </p>
                     </div>
@@ -284,9 +281,9 @@ export default function TripsPage() {
                 </div>
 
                 {/* Filtros */}
-                <Card>
+                <Card className="bg-slate-800/50 border-slate-700">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-white">
                             <Filter className="h-5 w-5" />
                             Filtros y Búsqueda
                         </CardTitle>
@@ -295,12 +292,12 @@ export default function TripsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {/* Búsqueda */}
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <Input
                                     placeholder="Buscar viajes..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10"
+                                    className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                                 />
                             </div>
 
@@ -308,7 +305,7 @@ export default function TripsPage() {
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus:ring-gray-300"
+                                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="all">Todos los estados</option>
                                 <option value="Pending">Pendiente</option>
@@ -320,7 +317,7 @@ export default function TripsPage() {
                             <select
                                 value={dateFilter}
                                 onChange={(e) => setDateFilter(e.target.value)}
-                                className="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus:ring-gray-300"
+                                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="all">Todas las fechas</option>
                                 <option value="today">Hoy</option>
@@ -333,7 +330,7 @@ export default function TripsPage() {
                             <Button
                                 variant="outline"
                                 onClick={clearFilters}
-                                className="w-full"
+                                className="w-full border-blue-700 text-slate-100 hover:bg-slate-700/30 hover:text-white bg-transparent"
                             >
                                 Limpiar Filtros
                             </Button>
@@ -346,11 +343,11 @@ export default function TripsPage() {
                     {currentTrips.map((trip) => (
                         <Card
                             key={trip.trip_id}
-                            className="hover:shadow-lg transition-all duration-200 hover:scale-[1.01] border-0 shadow-sm"
+                            className="hover:shadow-lg transition-all duration-200 hover:scale-[1.01] border-0 shadow-sm bg-slate-800/50 border-slate-700"
                         >
                             <CardHeader className="pb-3">
                                 <div className="flex items-center justify-between">
-                                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                                    <CardTitle className="text-lg font-semibold text-white">
                                         Viaje #{trip.trip_id}
                                     </CardTitle>
                                     {getStatusBadge(trip.status)}
@@ -360,21 +357,21 @@ export default function TripsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                                     {/* Ruta */}
                                     <div className="flex items-center gap-2">
-                                        <Navigation className="h-4 w-4 text-blue-600" />
+                                        <Navigation className="h-4 w-4 text-blue-400" />
                                         <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                            <p className="text-sm font-medium text-white">
                                                 {trip.origin} → {trip.destination}
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Ruta</p>
+                                            <p className="text-xs text-slate-400">Ruta</p>
                                         </div>
                                     </div>
 
                                     {/* Camión */}
                                     <div className="flex items-center gap-2">
-                                        <Truck className="h-4 w-4 text-emerald-600" />
+                                        <Truck className="h-4 w-4 text-emerald-400" />
                                         <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{trip.truck.plate}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            <p className="text-sm font-medium text-white">{trip.truck.plate}</p>
+                                            <p className="text-xs text-slate-400">
                                                 {trip.truck.brand} {trip.truck.model}
                                             </p>
                                         </div>
@@ -382,23 +379,23 @@ export default function TripsPage() {
 
                                     {/* Conductor */}
                                     <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-amber-600" />
+                                        <User className="h-4 w-4 text-amber-400" />
                                         <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                            <p className="text-sm font-medium text-white">
                                                 {trip.driver.name} {trip.driver.surname}
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Conductor</p>
+                                            <p className="text-xs text-slate-400">Conductor</p>
                                         </div>
                                     </div>
 
                                     {/* Fecha */}
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4 text-purple-600" />
+                                        <Calendar className="h-4 w-4 text-purple-400" />
                                         <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                            <p className="text-sm font-medium text-white">
                                                 {new Date(trip.date).toLocaleDateString("es-ES")}
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            <p className="text-xs text-slate-400">
                                                 {new Date(trip.date).toLocaleTimeString("es-ES", {
                                                     hour: "2-digit",
                                                     minute: "2-digit",
@@ -408,13 +405,13 @@ export default function TripsPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between pt-4 border-t border-slate-700">
                                     <div className="flex gap-2">
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleViewDetails(trip)}
-                                            className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            className="text-blue-400 border-blue-700 hover:bg-blue-900/30 hover:text-white bg-transparent"
                                         >
                                             <Eye className="h-3 w-3 mr-1" />
                                             Ver Detalles
@@ -430,7 +427,7 @@ export default function TripsPage() {
                                                 setTripToDelete(trip.trip_id)
                                                 setDeleteDialogOpen(true)
                                             }}
-                                            className="text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 bg-transparent"
+                                            className="text-red-400 border-slate-600 hover:bg-red-900/20 hover:text-white bg-transparent"
                                         >
                                             <Trash2 className="h-3 w-3 mr-1" />
                                             Eliminar
@@ -444,10 +441,10 @@ export default function TripsPage() {
 
                 {/* Paginación */}
                 {totalPages > 1 && (
-                    <Card>
+                    <Card className="bg-slate-800/50 border-slate-700">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
-                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                <div className="text-sm text-slate-300">
                                     Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, totalFilteredTrips)} de {totalFilteredTrips} viajes
                                 </div>
 
@@ -458,6 +455,7 @@ export default function TripsPage() {
                                         size="sm"
                                         onClick={() => goToPage(1)}
                                         disabled={currentPage === 1}
+                                        className="border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
                                     >
                                         <ChevronsLeft className="h-4 w-4" />
                                     </Button>
@@ -467,6 +465,7 @@ export default function TripsPage() {
                                         size="sm"
                                         onClick={() => goToPage(currentPage - 1)}
                                         disabled={currentPage === 1}
+                                        className="border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
                                     >
                                         <ChevronLeft className="h-4 w-4" />
                                     </Button>
@@ -491,7 +490,10 @@ export default function TripsPage() {
                                                     variant={currentPage === pageNum ? "default" : "outline"}
                                                     size="sm"
                                                     onClick={() => goToPage(pageNum)}
-                                                    className="w-8 h-8 p-0"
+                                                    className={`w-8 h-8 p-0 ${currentPage === pageNum
+                                                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                                        : "border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                                                        }`}
                                                 >
                                                     {pageNum}
                                                 </Button>
@@ -504,6 +506,7 @@ export default function TripsPage() {
                                         size="sm"
                                         onClick={() => goToPage(currentPage + 1)}
                                         disabled={currentPage === totalPages}
+                                        className="border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
                                     >
                                         <ChevronRight className="h-4 w-4" />
                                     </Button>
@@ -513,6 +516,7 @@ export default function TripsPage() {
                                         size="sm"
                                         onClick={() => goToPage(totalPages)}
                                         disabled={currentPage === totalPages}
+                                        className="border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
                                     >
                                         <ChevronsRight className="h-4 w-4" />
                                     </Button>
@@ -520,14 +524,14 @@ export default function TripsPage() {
 
                                 {/* Selector de items por página */}
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">Mostrar:</span>
+                                    <span className="text-sm text-slate-300">Mostrar:</span>
                                     <select
                                         value={itemsPerPage.toString()}
                                         onChange={(e) => {
                                             setItemsPerPage(parseInt(e.target.value))
                                             setCurrentPage(1)
                                         }}
-                                        className="w-20 h-8 rounded-md border border-gray-200 bg-white px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-800 dark:bg-gray-950"
+                                        className="w-20 h-8 rounded-md border border-slate-600 bg-slate-700/50 px-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="5">5</option>
                                         <option value="10">10</option>
@@ -540,39 +544,6 @@ export default function TripsPage() {
                     </Card>
                 )}
             </div>
-
-            {/* AlertDialog para eliminar viaje */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-red-600" />
-                            ¿Eliminar viaje?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            <strong>¡Atención!</strong> Si eliminas este viaje se perderán las métricas asociadas en
-                            el dashboard. Esta acción no se puede deshacer.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
-                            Cancelar
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (tripToDelete) {
-                                    handleDeleteTrip(tripToDelete)
-                                    setDeleteDialogOpen(false)
-                                    setTripToDelete(null)
-                                }
-                            }}
-                            variant="destructive"
-                        >
-                            Eliminar Viaje
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div >
     )
 }
