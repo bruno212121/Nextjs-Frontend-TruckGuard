@@ -1,14 +1,13 @@
 import SidebarNav from "@/components/sidebar-nav";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <SidebarProvider>
+        <div className="flex h-screen">
             <SidebarNav />
-            <SidebarInset>
+            <main className="flex-1 overflow-auto">
                 {children}
-            </SidebarInset>
-        </SidebarProvider>
+            </main>
+        </div>
     )
 }
 

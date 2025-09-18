@@ -99,32 +99,45 @@ export default function TrucksClient({
 
   // ---- Render mínimo (temporal) ----
   return (
-    <div className="p-6 h-full space-y-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800">
-      <FiltersBar
-        search={search}
-        onSearch={setSearch}
-        status={statusFilter}
-        onStatusChange={setStatusFilter}
-        onCreate={handleNavigateToCreate}
-      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {filtered.map((t) => (
-          <TruckCard
-            key={t.truck_id}
-            truck={t}
-            availableDrivers={drivers}
-            onChangeStatus={handleUpdateStatus}
-            onAssignDriver={handleAssignDriver}
-            onRemoveDriver={handleRemoveDriver}
-            onNavigateToDetails={handleNavigateToDetails}
-          />
-        ))}
+    <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 min-h-screen">
+      {/* Header con título y contador */}
+      <div className="mb-6 ml-46">
+        <h2 className="text-3xl font-bold text-white">🚛 Gestionar Camiones</h2>
+        <p className="text-slate-300 mt-1">
+          {filtered.length} camiones encontrados
+        </p>
       </div>
 
-      {filtered.length === 0 && (
-        <div className="text-center py-16 text-slate-400">No se encontraron camiones.</div>
-      )}
+      <div className="ml-46 max-w-7xl">
+        <FiltersBar
+          search={search}
+          onSearch={setSearch}
+          status={statusFilter}
+          onStatusChange={setStatusFilter}
+          onCreate={handleNavigateToCreate}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-6 p-7">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((t) => (
+            <TruckCard
+              key={t.truck_id}
+              truck={t}
+              availableDrivers={drivers}
+              onChangeStatus={handleUpdateStatus}
+              onAssignDriver={handleAssignDriver}
+              onRemoveDriver={handleRemoveDriver}
+              onNavigateToDetails={handleNavigateToDetails}
+            />
+          ))}
+        </div>
+
+        {filtered.length === 0 && (
+          <div className="text-center py-16 text-slate-400">No se encontraron camiones.</div>
+        )}
+      </div>
     </div>
   );
 }

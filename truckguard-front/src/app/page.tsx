@@ -10,40 +10,6 @@ import { Truck, Shield, BarChart3, ArrowRight, Menu, X, Sun, Moon, TrendingUp, C
 export default function TruckGuardLanding() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const features = [
-    {
-      icon: Shield,
-      title: "Mantenimiento Preventivo",
-      description:
-        "Evita reparaciones costosas con nuestro sistema de alertas inteligente que monitorea filtros, aceite, inyectores, frenos y neumáticos.",
-      color: "text-slate-300",
-      bgColor: "bg-slate-800/50",
-    },
-    {
-      icon: BarChart3,
-      title: "Análisis en Tiempo Real",
-      description:
-        "Obtén métricas detalladas de tu flota con dashboards interactivos que te ayudan a tomar decisiones informadas.",
-      color: "text-slate-300",
-      bgColor: "bg-slate-800/50",
-    },
-    {
-      icon: TrendingUp,
-      title: "Optimización de Costos",
-      description:
-        "Reduce gastos operativos hasta un 30% con nuestro sistema de gestión inteligente de mantenimiento y rutas.",
-      color: "text-slate-300",
-      bgColor: "bg-slate-800/50",
-    },
-    {
-      icon: Clock,
-      title: "Gestión Eficiente",
-      description: "Administra conductores, viajes y vehículos desde una sola plataforma centralizada y fácil de usar.",
-      color: "text-slate-300",
-      bgColor: "bg-slate-800/50",
-    },
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800">
       <header className="border-b border-slate-700 bg-gradient-to-r from-slate-800 to-gray-800 sticky top-0 z-50">
@@ -56,16 +22,6 @@ export default function TruckGuardLanding() {
                 <p className="text-xs text-slate-300">Gestión inteligente de flota</p>
               </div>
             </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-white hover:text-slate-300 transition-colors">
-                Características
-              </a>
-              <a href="#contact" className="text-white hover:text-slate-300 transition-colors">
-                Contacto
-              </a>
-            </nav>
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center gap-3">
@@ -94,12 +50,6 @@ export default function TruckGuardLanding() {
           {mobileMenuOpen && (
             <div className="md:hidden py-4 border-t border-slate-700">
               <nav className="flex flex-col gap-4">
-                <a href="#features" className="text-white hover:text-slate-300 transition-colors">
-                  Características
-                </a>
-                <a href="#contact" className="text-white hover:text-slate-300 transition-colors">
-                  Contacto
-                </a>
                 <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
                   <Link href="/login">
                     <Button variant="ghost" className="text-white hover:bg-slate-700/50">
@@ -134,39 +84,6 @@ export default function TruckGuardLanding() {
                   vehículos.
                 </p>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/register">
-                  <Button size="lg" className="bg-slate-700 text-white hover:bg-slate-600 text-lg px-8">
-                    Comenzar Gratis
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/demo">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-lg px-8 border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
-                  >
-                    Ver Demo
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-8 pt-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-300">30%</div>
-                  <div className="text-sm text-slate-400">Reducción de costos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-300">95%</div>
-                  <div className="text-sm text-slate-400">Disponibilidad de flota</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-300">24/7</div>
-                  <div className="text-sm text-slate-400">Monitoreo continuo</div>
-                </div>
-              </div>
             </div>
 
             <div className="relative">
@@ -188,40 +105,8 @@ export default function TruckGuardLanding() {
 
       <section id="features" className="py-20 bg-slate-800/90 backdrop-blur-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <Badge className="bg-slate-700 text-slate-200 border-slate-600">Características Principales</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white text-balance">
-              Todo lo que necesitas para gestionar tu flota
-            </h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto text-pretty">
-              Desde mantenimiento preventivo hasta análisis avanzados, TruckGuard te proporciona las herramientas
-              necesarias para optimizar tu operación.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card
-                key={index}
-                className="border-slate-700 bg-slate-800/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                <CardHeader className="text-center pb-4">
-                  <div
-                    className={`w-16 h-16 ${feature.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-4`}
-                  >
-                    <feature.icon className={`h-8 w-8 ${feature.color}`} />
-                  </div>
-                  <CardTitle className="text-xl font-bold text-white">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-300 text-center leading-relaxed">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
           {/* Component Details */}
-          <div className="mt-20 bg-gradient-to-r from-slate-800/80 to-gray-800/60 rounded-2xl p-8 lg:p-12 border border-slate-700">
+          <div className="mt-20 bg-gradient-to-r from-slate-800/80 to-gray-800/60 rounded-2xl p-6 lg:p-12 border border-slate-700">
             <div className="text-center space-y-4 mb-12">
               <h3 className="text-2xl lg:text-3xl font-bold text-white">Monitoreo Inteligente de Componentes</h3>
               <p className="text-slate-300 text-lg max-w-2xl mx-auto">
@@ -229,7 +114,7 @@ export default function TruckGuardLanding() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
               {[
                 { name: "Filtros", interval: "10,000-15,000 km", icon: "🔧" },
                 { name: "Aceite", interval: "20,000-30,000 km", icon: "🛢️" },
@@ -248,39 +133,6 @@ export default function TruckGuardLanding() {
         </div>
       </section>
 
-      <section id="contact" className="py-20 bg-gradient-to-r from-slate-800 to-gray-800 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto space-y-8">
-            <h2 className="text-3xl lg:text-4xl font-bold text-balance">¿Listo para optimizar tu flota?</h2>
-            <p className="text-xl text-slate-300 text-pretty">
-              Únete a cientos de empresas que ya están ahorrando costos y mejorando la eficiencia de sus flotas con
-              TruckGuard.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="text-lg px-8 bg-slate-100 text-slate-800 hover:bg-white"
-                >
-                  Comenzar Prueba Gratuita
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-8 border-slate-400 text-slate-300 hover:bg-slate-700 hover:text-white bg-transparent"
-                >
-                  Contactar Ventas
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <footer className="py-12 bg-slate-900/95 backdrop-blur-sm border-t border-slate-700">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
@@ -293,71 +145,7 @@ export default function TruckGuardLanding() {
               </div>
               <p className="text-slate-300 text-sm">Gestión inteligente de flotas para empresas modernas.</p>
             </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Producto</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Características
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Precios
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Demo
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Empresa</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Sobre nosotros
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Contacto
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Soporte</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Documentación
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Centro de ayuda
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-300 transition-colors">
-                    Estado del servicio
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
-
           <div className="border-t border-slate-700 mt-8 pt-8 text-center">
             <p className="text-slate-300 text-sm">© 2025 TruckGuard. Todos los derechos reservados.</p>
           </div>

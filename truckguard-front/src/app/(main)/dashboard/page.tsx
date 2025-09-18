@@ -5,7 +5,7 @@ export default async function Dashboard() {
     const fleetAnalytics = await getFleetAnalytics()
 
     return (
-        <div className="p-6 w-full">
+        <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 min-h-screen">
             <DashboardHeader lastUpdated={fleetAnalytics.updated_at} />
             <MetricsCards data={fleetAnalytics} />
         </div>
