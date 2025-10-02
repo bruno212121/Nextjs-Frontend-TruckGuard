@@ -97,6 +97,10 @@ export default function TrucksClient({
     router.push(`/trucks/${truck_id}`);
   };
 
+  const handleNavigateToCreateMaintenance = () => {	
+    router.push("/maintenance");
+  };
+
   // ---- Render mínimo (temporal) ----
   return (
 
@@ -116,6 +120,7 @@ export default function TrucksClient({
           status={statusFilter}
           onStatusChange={setStatusFilter}
           onCreate={handleNavigateToCreate}
+          onCreateMaintenance={handleNavigateToCreateMaintenance}
         />
       </div>
 
