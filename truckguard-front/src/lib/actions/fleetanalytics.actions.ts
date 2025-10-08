@@ -2,7 +2,6 @@
 
 import { cookies } from "next/headers"
 
-
 export const getFleetAnalytics = async () => {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
@@ -14,6 +13,23 @@ export const getFleetAnalytics = async () => {
     })
     if (!response.ok) {
         throw new Error("Failed to get fleet analytics")
+    }
+    const data = await response.json()
+
+    return data
+}
+
+export const getPendingMaintenances = async () => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+    const response = await fetch(`${process.env.BACKENDURL}/Maintenance/pending`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+    if (!response.ok) {
+        throw new Error("Failed to get pending maintenances")
     }
     const data = await response.json()
 

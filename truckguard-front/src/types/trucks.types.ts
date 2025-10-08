@@ -34,7 +34,7 @@ export interface SingleTruckResponse {
 
 export interface ComponentStatus {
     component_name: string;
-    current_status: "Excellent" | "Very Good" | "Good" | "Fair" | "Poor" | "Maintenance Required";
+    current_status: "Excellent" | "Very Good" | "Good" | "Fair" | "Maintenance Required";
     health_percentage: number;
     last_maintenance_mileage: number;
     next_maintenance_mileage: number;
@@ -48,7 +48,7 @@ export interface TruckComponentsStatusResponse {
     model: string;
     brand: string;
     current_mileage: number;
-    overall_health_status: "Excellent" | "Very Good" | "Good" | "Fair" | "Poor" | "Maintenance Required";
+    overall_health_status: "Excellent" | "Very Good" | "Good" | "Fair" | "Maintenance Required";
     components: ComponentStatus[];
     total_components: number;
     components_requiring_maintenance: number;
@@ -58,7 +58,7 @@ export interface TruckComponentsStatusResponse {
 export interface MaintenanceRecord {
     maintenance_id: number;
     description: string;
-    status: "Excellent" | "Very Good" | "Good" | "Fair" | "Poor" | "Maintenance Required";
+    status: "Excellent" | "Very Good" | "Good" | "Fair" | "Maintenance Required";
     component: string;
     cost: number;
     mileage_interval: number;
