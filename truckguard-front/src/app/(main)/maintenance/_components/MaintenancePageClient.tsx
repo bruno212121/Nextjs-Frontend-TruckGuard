@@ -2,21 +2,32 @@
 
 import { useMemo, useState } from "react";
 import { Wrench } from "lucide-react";
+import { useRouter } from "next/navigation";
 import MaintenanceStats from "./MaintenanceStats";
 import MaintenanceFilters from "./MaintenanceFilters";
 import TruckMaintenanceCard from "./TruckMaintenanceCard";
-import type { Truck } from "@/types/trucks.types";
+import type { Truck, TruckComponentsStatusResponse } from "@/types/trucks.types";
 
-export default function MaintenancePageClient({ initialTrucks }: { initialTrucks: Truck[] }) {
+export default function MaintenancePageClient({ initialTrucks, componentsByTruckId }: { initialTrucks: Truck[]; componentsByTruckId: Record<number, TruckComponentsStatusResponse> }) {
     const [searchTerm, setSearch] = useState("");
+    const router = useRouter();
+
+    const handleMaintenanceCreated = () => {
+        // Refrescar la página para obtener los datos actualizados
+        router.refresh();
+    };
 
     const filtered = useMemo(() => {
-        return initialTrucks.filter(truck => {
-            const s = searchTerm.toLowerCase();
-            return truck.plate.toLowerCase().includes(s) ||
-                truck.brand.toLowerCase().includes(s) ||
-                truck.model.toLowerCase().includes(s);
-        });
+        const allowedStatuses = ["Mantenimiento", "Inactivo"]; // Solo mostrar estos estados
+        return initialTrucks
+            .filter(truck => truck.driver)
+            .filter(truck => allowedStatuses.includes(truck.status))
+            .filter(truck => {
+                const s = searchTerm.toLowerCase();
+                return truck.plate.toLowerCase().includes(s) ||
+                    truck.brand.toLowerCase().includes(s) ||
+                    truck.model.toLowerCase().includes(s);
+            });
     }, [initialTrucks, searchTerm]);
 
     // KPIs simplificados basados en datos reales
@@ -53,7 +64,12 @@ export default function MaintenancePageClient({ initialTrucks }: { initialTrucks
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {filtered.map(truck => (
-                    <TruckMaintenanceCard key={truck.truck_id} truck={truck} />
+                    <TruckMaintenanceCard
+                        key={truck.truck_id}
+                        truck={truck}
+                        componentsData={componentsByTruckId[truck.truck_id]}
+                        onMaintenanceCreated={handleMaintenanceCreated}
+                    />
                 ))}
             </div>
 

@@ -11,6 +11,7 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react"
+import Link from "next/link"
 
 // Tipos basados en tu JSON real
 interface MetricsData {
@@ -92,9 +93,10 @@ const MetricCard = ({ title, value, icon: Icon, trend, trendValue, color = "defa
 
 interface MetricsCardsProps {
   data: MetricsData
+  pendingCount: number
 }
 
-export default function MetricsCards({ data }: MetricsCardsProps) {
+export default function MetricsCards({ data, pendingCount }: MetricsCardsProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-ES", {
       style: "currency",
@@ -179,14 +181,16 @@ export default function MetricsCards({ data }: MetricsCardsProps) {
           trendValue="Sin cambios"
           color="default"
         />
-        <MetricCard
-          title="Mantenimiento Pendiente"
-          value={data.pending_maintenance === 0 ? "Ninguno" : data.pending_maintenance} // 0
-          icon={Wrench}
-          trend="neutral"
-          trendValue="Todo al día"
-          color="success"
-        />
+        <Link href="/maintenance/pending" className="block">
+          <MetricCard
+            title="Mantenimiento Pendiente"
+            value={pendingCount === 0 ? "Ninguno" : pendingCount}
+            icon={Wrench}
+            trend="neutral"
+            trendValue={pendingCount === 0 ? "Todo al día" : `${pendingCount} pendiente${pendingCount > 1 ? 's' : ''}`}
+            color={pendingCount === 0 ? "success" : "warning"}
+          />
+        </Link>
       </div>
     </div>
   )

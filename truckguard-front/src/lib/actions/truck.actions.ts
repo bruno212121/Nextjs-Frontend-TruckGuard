@@ -154,7 +154,8 @@ export const getTruckComponentsStatus = async (truckId: number): Promise<TruckCo
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
 
-    const response = await fetch(`${process.env.BACKENDURL}/Trucks/${truckId}/components-status`, {
+    // Endpoint correcto del backend: /components/{id}/status
+    const response = await fetch(`${process.env.BACKENDURL}/components/${truckId}/status`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -192,6 +193,40 @@ export const getTruckMaintenanceHistory = async (truckId: number): Promise<Truck
     if (!response.ok) {
         const msg = await response.text().catch(() => "Failed to get truck maintenance history")
         throw new Error(`Failed to get truck maintenance history (${response.status} - ${msg})`)
+    }
+
+    const data = await response.json()
+    return data
+}
+
+/**
+ * POST /Maintenance/new
+ * Crea una nueva orden de mantenimiento
+ */
+export const createMaintenance = async (payload: {
+    description: string;
+    component: string;
+    truck_id: number;
+    driver_id: number | null;
+    cost: number;
+    mileage_interval: number;
+    maintenance_interval: number;
+}): Promise<any> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/Maintenance/new`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+        const msg = await response.text().catch(() => "Failed to create maintenance")
+        throw new Error(`Failed to create maintenance (${response.status} - ${msg})`)
     }
 
     const data = await response.json()
