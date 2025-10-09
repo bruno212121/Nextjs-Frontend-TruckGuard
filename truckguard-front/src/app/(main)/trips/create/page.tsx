@@ -10,11 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import type { Truck as TruckType, Driver } from "@/types/trucks.types"
-import type { CreateTripRequest } from "@/types/trips.types"
-import { createTrips } from "@/lib/actions/trips.actions"
+import { createTrips, type CreateTripRequest } from "@/lib/actions/trips.actions"
 import { getTrucks } from "@/lib/actions/truck.actions"
 import GoogleMaps from "@/components/google/google-maps"
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api"
+import { useToast } from "@/components/ui/use-toast"
+import BlockedBanner from "@/components/trips/BlockedBanner"
+import { formatTripBlockError } from "@/lib/formatters/trips"
 import {
     Truck,
     Users,
@@ -38,6 +40,7 @@ export default function CreateTripPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [activeSection, setActiveSection] = useState("trips")
     const { theme, setTheme } = useTheme()
+    const { toast } = useToast()
 
     // Estados para los datos del backend
     const [availableTrucks, setAvailableTrucks] = useState<TruckType[]>([])
@@ -53,6 +56,19 @@ export default function CreateTripPage() {
         status: "Pending" as const,
         date: "",
     })
+
+    // Estados para manejo de errores
+    const [error, setError] = useState<string>("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [blocked, setBlocked] = useState<{
+        title: string;
+        subtitle?: string;
+        description: string;
+        severity: "critical" | "warning" | "error";
+        components: string[];
+    } | null>(null)
+
+    const errorRef = useRef<HTMLDivElement | null>(null)
 
     const { isLoaded } = useJsApiLoader({
         id: "google-map-script",
@@ -88,7 +104,7 @@ export default function CreateTripPage() {
                         const initialData = {
                             ...formData,
                             truck_id: String(t0.truck_id),
-                            driver_id: String(t0.driver.id),
+                            driver_id: String(t0.driver?.id),
                         }
 
                         setFormData(initialData)
@@ -106,12 +122,15 @@ export default function CreateTripPage() {
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
+        setError("");
+        setBlocked(null);
+        setIsSubmitting(true);
 
-        // Validar que ambos IDs estén presentes
         if (!formData.truck_id || !formData.driver_id) {
-            alert("Error: Debes seleccionar un camión válido")
-            return
+            setError("Debes seleccionar un camión válido.");
+            setIsSubmitting(false);
+            return;
         }
 
         const tripData: CreateTripRequest = {
@@ -121,39 +140,69 @@ export default function CreateTripPage() {
             driver_id: Number(formData.driver_id),
             status: formData.status,
             date: formData.date,
+        };
+
+        const result = await createTrips(tripData);
+
+        if (!result.ok) {
+            const err: any = result.error;
+
+            // Formateamos a español:
+            const f = formatTripBlockError(err);
+
+            // Banner + chips
+            setBlocked({
+                title: f.title,
+                subtitle: f.subtitle,
+                description: f.description,
+                severity: f.severity,
+                components: err.components ?? [],
+            });
+
+            // Toast
+            toast({
+                variant: "destructive",
+                title: f.title,
+                description: f.description,
+                duration: 6000,
+            });
+
+            // Solo para validaciones básicas del formulario
+            setError("");
+
+            // Scroll al banner
+            setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+
+            setIsSubmitting(false);
+            return;
         }
 
-        try {
-            await createTrips(tripData)
-            // Guardar datos mínimos para pantalla de confirmación
-            const selectedTruck = availableTrucks.find(t => String(t.truck_id) === formData.truck_id)
-            const createdTrip = {
-                trip_id: Date.now(),
-                origin: tripData.origin,
-                destination: tripData.destination,
-                status: tripData.status,
-                distance: 0,
-                duration: "",
-                driver: {
-                    name: selectedTruck?.driver ? `${selectedTruck.driver.name}` : "",
-                    email: "",
-                    phone: "",
-                },
-                truck: {
-                    brand: selectedTruck?.brand || "",
-                    model: selectedTruck?.model || "",
-                    plate: selectedTruck?.plate || "",
-                    year: selectedTruck?.year || 0,
-                },
-                created_at: new Date().toISOString(),
-            }
-            try { localStorage.setItem("created_trip", JSON.stringify(createdTrip)) } catch { }
-            // Redirigir a confirmación
-            window.location.href = "/trips/create/createdata"
-        } catch (error) {
-            console.error("Error al crear el viaje:", error)
-        }
-    }
+        // Éxito → redirigís como ya tenías:
+        const selectedTruck = availableTrucks.find(t => String(t.truck_id) === formData.truck_id);
+        const createdTrip = {
+            trip_id: Date.now(),
+            origin: tripData.origin,
+            destination: tripData.destination,
+            status: tripData.status,
+            distance: 0,
+            duration: "",
+            driver: {
+                name: selectedTruck?.driver ? `${selectedTruck.driver.name}` : "",
+                email: "",
+                phone: "",
+            },
+            truck: {
+                brand: selectedTruck?.brand || "",
+                model: selectedTruck?.model || "",
+                plate: selectedTruck?.plate || "",
+                year: selectedTruck?.year || 0,
+            },
+            created_at: new Date().toISOString(),
+        };
+        try { localStorage.setItem("created_trip", JSON.stringify(createdTrip)); } catch { }
+
+        window.location.href = "/trips/create/createdata";
+    };
 
 
 
@@ -204,6 +253,20 @@ export default function CreateTripPage() {
                                 <h2 className="text-2xl font-bold text-white text-balance">🚛 Crear Nuevo Viaje</h2>
                                 <p className="text-slate-300 mt-1">Complete los datos del viaje y visualice la ruta</p>
                             </div>
+                        </div>
+
+                        {/* Banner de Error */}
+                        <div ref={errorRef}>
+                            {blocked ? (
+                                <BlockedBanner
+                                    title={blocked.title}
+                                    subtitle={blocked.subtitle}
+                                    description={blocked.description}
+                                    components={blocked.components}
+                                    severity={blocked.severity}
+                                    ctaHref="/maintenance/pending"
+                                />
+                            ) : null}
                         </div>
 
                         {/* Formulario */}
@@ -408,8 +471,22 @@ export default function CreateTripPage() {
                                                     Cancelar
                                                 </Button>
                                             </Link>
-                                            <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
-                                                Crear Viaje
+                                            <Button
+                                                type="submit"
+                                                disabled={isSubmitting || !!blocked}
+                                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                        </svg>
+                                                        Creando...
+                                                    </>
+                                                ) : (
+                                                    "Crear Viaje"
+                                                )}
                                             </Button>
                                         </div>
                                     </form>
