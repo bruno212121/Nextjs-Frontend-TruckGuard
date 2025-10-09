@@ -1,7 +1,29 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { TripResponse, SingleTripResponse, CreateTripRequest, UpdateTripRequest } from "@/types/trips.types"
+import { TripResponse, SingleTripResponse, UpdateTripRequest } from "@/types/trips.types"
+
+export type TripBlocked = {
+  code: "TRIP_BLOCKED_COMPONENTS";
+  severity: "critical" | "warning" | "error";
+  reason: "components_requiring_maintenance" | "components_fair_condition";
+  components: string[];              // ← acá viene ["Aceite", ...]
+  message: string;
+  statusCode: number;
+};
+
+export type CreateTripSuccess = { ok: true; data: any };
+export type CreateTripFailure = { ok: false; error: TripBlocked | { message: string; statusCode: number } };
+export type CreateTripResult = CreateTripSuccess | CreateTripFailure;
+
+export type CreateTripRequest = {
+  origin: string;
+  destination: string;
+  truck_id: number;
+  driver_id: number;
+  status: "Pending" | "In Course" | "Completed";
+  date: string; // ISO local (ej: "2025-10-09T19:18")
+};
 
 
 export const getTrips = async (page: number = 1, per_page: number = 5): Promise<TripResponse> => {
@@ -42,23 +64,42 @@ export const getTrip = async (id: number): Promise<SingleTripResponse> => {
 }
 
 
-export const createTrips = async (tripData: CreateTripRequest): Promise<any> => {
-  const cookieStore = await cookies()
-  const token = cookieStore.get("token")?.value
+export async function createTrips(tripData: CreateTripRequest): Promise<CreateTripResult> {
+  const token = (await cookies()).get("token")?.value;
 
-  const response = await fetch(`${process.env.BACKENDURL}/Trips/new`, {
+  const res = await fetch(`${process.env.BACKENDURL}/Trips/new`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
+      "Authorization": `Bearer ${token ?? ""}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
     },
-    body: JSON.stringify(tripData)
-  })
-  if (!response.ok) {
-    throw new Error("Failed to create trip")
+    cache: "no-store",
+    body: JSON.stringify(tripData),
+  });
+
+  if (res.ok) {
+    const data = await res.json().catch(() => ({}));
+    return { ok: true, data };
   }
-  const data = await response.json()
-  return data
+
+  // Error: intentamos parsear cuerpo JSON del backend (409/422)
+  try {
+    const err = await res.json();
+    // Aseguramos statusCode y normalizamos campos
+    const normalized = {
+      statusCode: res.status,
+      message: err?.message ?? "Error al crear el viaje",
+      code: err?.code,
+      severity: err?.severity,
+      reason: err?.reason,
+      components: Array.isArray(err?.components) ? err.components : [],
+    };
+    return { ok: false, error: normalized as TripBlocked };
+  } catch {
+    // Fallback si no vino JSON
+    return { ok: false, error: { message: "Error al crear el viaje", statusCode: res.status } };
+  }
 }
 
 //completar viaje

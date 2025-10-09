@@ -1,2 +1,1 @@
-export { default as TripsCard } from "./trip-card"
-export { default as TripsList } from "./trips-list"
+export { default as BlockedBanner } from "./BlockedBanner";
