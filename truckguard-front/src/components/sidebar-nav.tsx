@@ -7,12 +7,14 @@ import Link from "next/link"
 import { usePathname, useRouter } from 'next/navigation'
 import { logout } from "@/lib/actions/auth.actions"
 import { useState } from "react"
+import { useUser } from "@/hooks/use-user"
 
 export default function SidebarNav() {
     const { theme, setTheme } = useTheme()
     const pathname = usePathname()
     const router = useRouter()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const { user, loading } = useUser()
 
     // Determinar la sección activa basada en la ruta actual
     const getActiveSection = () => {
@@ -58,7 +60,13 @@ export default function SidebarNav() {
                 {/* Mensaje de bienvenida */}
                 <div className="p-4 border-b border-slate-700 bg-slate-700/50">
                     <p className="text-sm text-slate-300">Bienvenido,</p>
-                    <p className="font-semibold text-white">Juan Pérez</p>
+                    {loading ? (
+                        <p className="font-semibold text-white">Cargando...</p>
+                    ) : user ? (
+                        <p className="font-semibold text-white">{user.name} {user.surname}</p>
+                    ) : (
+                        <p className="font-semibold text-white">Usuario no encontrado</p>
+                    )}
                 </div>
 
                 {/* Navegación */}
