@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getTruck, getTruckComponentsStatus, getTruckMaintenanceHistory } from "@/lib/actions/truck.actions";
+import { getTruck, getTruckCurrentComponents, getTruckComponentsHistory, getTruckMaintenanceHistory } from "@/lib/actions/truck.actions";
 import { Card } from "@/components/ui/card";
 
 import TruckHeader from "./_components/TruckHeader";
@@ -15,14 +15,16 @@ export default async function TruckDetailPage({ params }: Props) {
     const id = Number(params.id);
     if (Number.isNaN(id)) notFound();
 
-    // 1) Traer el camión, estado de componentes y historial de mantenimiento
-    const [{ truck }, componentsStatusResponse, maintenanceHistoryResponse] = await Promise.all([
+    // 1) Traer el camión, componentes actuales, historial de componentes y historial de mantenimiento
+    const [{ truck }, currentComponentsResponse, componentsHistoryResponse, maintenanceHistoryResponse] = await Promise.all([
         getTruck(id),
-        getTruckComponentsStatus(id).catch(() => ({
-            components: [],
-            overall_health_status: "Good",
-            total_components: 0,
-            components_requiring_maintenance: 0
+        getTruckCurrentComponents(id).catch(() => ({
+            truck_id: id,
+            components: []
+        })), // Fallback si falla
+        getTruckComponentsHistory(id).catch(() => ({
+            truck_id: id,
+            maintenance_history: []
         })), // Fallback si falla
         getTruckMaintenanceHistory(id).catch(() => ({
             maintenances: []
@@ -31,31 +33,55 @@ export default async function TruckDetailPage({ params }: Props) {
 
     if (!truck) notFound();
 
+    // Log de depuración
+    console.log("🔍 DEBUG - Datos en TruckDetailPage:");
+    console.log("- Camión:", truck);
+    console.log("- Componentes actuales:", currentComponentsResponse);
+    console.log("- Historial de componentes:", componentsHistoryResponse);
+    console.log("- Historial de mantenimiento:", maintenanceHistoryResponse);
+
     // 2) Derivar datos que usa la UI
     const driverName =
         truck.driver ? `${truck.driver.name} ${truck.driver.surname}` : "—";
 
-    // Salud: usar el estado general del endpoint de componentes o fallback
+    // Salud: calcular basado en los componentes actuales
     const healthScore = (() => {
-        const map: Record<string, number> = {
-            Excellent: 95,
-            "Very Good": 90,
-            Good: 85,
-            Fair: 70,
-            Poor: 50,
-            Critical: 30,
-            "Maintenance Required": 65,
+        if (currentComponentsResponse.components.length === 0) return 85;
+
+        // Mapear estados a números (escala ampliada para mejor visualización)
+        const statusMap: Record<string, number> = {
+            "Excellent": 100,
+            "Very Good": 85,
+            "Good": 50,
+            "Fair": 30,
+            "Maintenance Required": 25,
         };
-        // Usar el overall_health_status del endpoint de componentes
-        return map[componentsStatusResponse.overall_health_status as keyof typeof map] ?? 85;
+
+        // Calcular promedio de salud de todos los componentes
+        const totalScore = currentComponentsResponse.components.reduce((sum: number, component: any) => {
+            return sum + (statusMap[component.status] || 80);
+        }, 0);
+
+        return Math.round(totalScore / currentComponentsResponse.components.length);
     })();
 
-    // Radar: usar datos reales de componentes del backend con health_percentage
-    const radarData = componentsStatusResponse.components.length > 0
-        ? componentsStatusResponse.components.map((component) => ({
-            label: component.component_name,
-            value: component.health_percentage, // Usar directamente el porcentaje de salud
-        }))
+    // Radar: usar datos reales de componentes actuales del backend
+    const radarData = currentComponentsResponse.components.length > 0
+        ? currentComponentsResponse.components.map((component: any) => {
+            // Mapear estado a porcentaje para el radar (escala ampliada)
+            const statusMap: Record<string, number> = {
+                "Excellent": 100,
+                "Very Good": 85,
+                "Good": 50,
+                "Fair": 30,
+                "Maintenance Required": 25,
+            };
+
+            return {
+                label: component.component_name,
+                value: statusMap[component.status] || 80,
+            };
+        })
         : [
             // Datos de fallback si no hay componentes
             { label: "Filtros", value: 90 },
@@ -65,14 +91,37 @@ export default async function TruckDetailPage({ params }: Props) {
             { label: "Inyectores", value: 70 },
         ];
 
-    // Historial de mantenimiento: usar datos reales del backend
-    const maintenance = maintenanceHistoryResponse.maintenances.map((m) => ({
-        id: m.maintenance_id,
-        title: m.description || `${m.component} - Mantenimiento`,
-        date: m.updated_at || m.created_at,
-        status: (m.status === "Maintenance Required" ? "Programado" : "Completado") as "Programado" | "Completado",
-        cost: m.cost,
-    }));
+    // Historial de componentes (mantenimientos realizados): usar datos del nuevo endpoint
+    const componentsHistory = componentsHistoryResponse.maintenance_history?.map((h: any) => ({
+        id: h.maintenance_id,
+        component: h.component_name,
+        status: h.status,
+        cost: h.cost,
+        date: h.created_at,
+        description: `Mantenimiento de ${h.component_name}`,
+    })) || [];
+
+    // Combinar historial de mantenimientos y historial de componentes
+    const allMaintenanceHistory = [
+        // Historial de mantenimientos tradicional
+        ...maintenanceHistoryResponse.maintenances.map((m) => ({
+            id: m.maintenance_id,
+            title: m.description || `${m.component} - Mantenimiento`,
+            date: m.updated_at || m.created_at,
+            status: (m.status === "Maintenance Required" ? "Programado" : "Completado") as "Programado" | "Completado",
+            cost: m.cost,
+            type: "maintenance" as const,
+        })),
+        // Historial de componentes (mantenimientos realizados)
+        ...(componentsHistoryResponse.maintenance_history || []).map((h: any) => ({
+            id: h.maintenance_id,
+            title: `Mantenimiento de ${h.component_name}`,
+            date: h.created_at,
+            status: "Completado" as "Programado" | "Completado",
+            cost: h.cost,
+            type: "component" as const,
+        }))
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Ordenar por fecha más reciente
 
 
     return (
@@ -116,7 +165,7 @@ export default async function TruckDetailPage({ params }: Props) {
                         <h3 className="text-xl font-semibold text-white mb-4">
                             Historial de Mantenimiento
                         </h3>
-                        <MaintenanceHistory items={maintenance} />
+                        <MaintenanceHistory items={allMaintenanceHistory} />
                     </Card>
                 </div>
             </div>

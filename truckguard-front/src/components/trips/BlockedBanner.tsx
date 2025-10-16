@@ -1,7 +1,8 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TriangleAlert, OctagonX, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TriangleAlert, OctagonX, Info, Wrench } from "lucide-react";
 import Link from "next/link";
 
 export default function BlockedBanner({
@@ -56,10 +57,10 @@ export default function BlockedBanner({
                                 key={c}
                                 variant="outline"
                                 className={`text-xs px-2 py-1 ${severity === "critical"
-                                        ? "border-red-400/50 text-red-200 bg-red-800/20"
-                                        : severity === "warning"
-                                            ? "border-yellow-400/50 text-yellow-200 bg-yellow-800/20"
-                                            : "border-rose-400/50 text-rose-200 bg-rose-800/20"
+                                    ? "border-red-400/50 text-red-200 bg-red-800/20"
+                                    : severity === "warning"
+                                        ? "border-yellow-400/50 text-yellow-200 bg-yellow-800/20"
+                                        : "border-rose-400/50 text-rose-200 bg-rose-800/20"
                                     }`}
                             >
                                 {c}
@@ -68,12 +69,21 @@ export default function BlockedBanner({
                     </div>
                 )}
 
-                <div className="mt-3">
-                    <Link
-                        href={ctaHref}
-                        className="text-xs underline text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                        Ver mantenimientos pendientes →
+                <div className="mt-4">
+                    <Link href={ctaHref}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className={`w-full sm:w-auto ${severity === "critical"
+                                ? "border-red-400/50 text-red-200 bg-red-800/20 hover:bg-red-700/30 hover:text-white hover:border-red-400"
+                                : severity === "warning"
+                                    ? "border-yellow-400/50 text-yellow-200 bg-yellow-800/20 hover:bg-yellow-700/30 hover:text-white hover:border-yellow-400"
+                                    : "border-rose-400/50 text-rose-200 bg-rose-800/20 hover:bg-rose-700/30 hover:text-white hover:border-rose-400"
+                                }`}
+                        >
+                            <Wrench className="h-4 w-4 mr-2" />
+                            Ver Estado del Camión
+                        </Button>
                     </Link>
                 </div>
             </CardContent>

@@ -131,10 +131,10 @@ export default function TruckMaintenanceCard({
                                             {c.current_status}
                                         </Badge>
                                     </div>
-                                    <span className="text-orange-400 font-bold">{Math.max(0, 100 - c.health_percentage)}%</span>
+                                    <span className="text-orange-400 font-bold">{c.health_percentage}%</span>
                                 </div>
                                 <div className="mt-2 h-2 w-full rounded bg-slate-600">
-                                    <div className={`h-2 rounded ${barClassFor(c.current_status)}`} style={{ width: `${Math.min(100, Math.max(0, 100 - c.health_percentage))}%` }} />
+                                    <div className={`h-2 rounded ${barClassFor(c.current_status)}`} style={{ width: `${c.health_percentage}%` }} />
                                 </div>
                                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-300">
                                     <div>

@@ -174,6 +174,58 @@ export const getTruckComponentsStatus = async (truckId: number): Promise<TruckCo
 }
 
 /**
+ * GET /components/{truck_id}/list
+ * Obtiene los componentes base actuales del camión (costo = 0)
+ */
+export const getTruckCurrentComponents = async (truckId: number): Promise<any> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/components/${truckId}/list`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    if (!response.ok) {
+        const msg = await response.text().catch(() => "Failed to get truck current components")
+        throw new Error(`Failed to get truck current components (${response.status} - ${msg})`)
+    }
+
+    const data = await response.json()
+    return data
+}
+
+/**
+ * GET /components/{truck_id}/history
+ * Obtiene el historial de mantenimientos realizados (costo > 0)
+ */
+export const getTruckComponentsHistory = async (truckId: number): Promise<any> => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    const response = await fetch(`${process.env.BACKENDURL}/components/${truckId}/history`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    if (!response.ok) {
+        const msg = await response.text().catch(() => "Failed to get truck components history")
+        throw new Error(`Failed to get truck components history (${response.status} - ${msg})`)
+    }
+
+    const data = await response.json()
+    return data
+}
+
+/**
  * GET /Maintenance/{truckid}/components
  * Obtiene el historial completo de mantenimientos de un camión específico
  */
