@@ -264,7 +264,7 @@ export default function CreateTripPage() {
                                     description={blocked.description}
                                     components={blocked.components}
                                     severity={blocked.severity}
-                                    ctaHref="/maintenance/pending"
+                                    ctaHref={`/trucks/${formData.truck_id}`}
                                 />
                             ) : null}
                         </div>

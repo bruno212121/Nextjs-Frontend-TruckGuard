@@ -10,7 +10,7 @@ export default async function MaintenancePage() {
 
     const list = trucks ?? [];
 
-    // Optimización: usar endpoint bulk en lugar de múltiples llamadas individuales
+
     let componentsByTruckId: Record<number, TruckComponentsStatusResponse> = {};
 
     if (list.length > 0) {
