@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 import type { Truck, ComponentStatus } from "@/types/trucks.types";
 import { createMaintenance } from "@/lib/actions/truck.actions";
 
@@ -67,7 +68,7 @@ export default function CreateMaintenanceModal({
 
             // Cerrar modal y llamar callback de éxito
             onClose();
-            alert("Mantenimiento creado exitosamente");
+            toast.success("Mantenimiento creado exitosamente");
 
             // Si hay callback de éxito, ejecutarlo
             if (onSuccess) {

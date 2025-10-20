@@ -64,3 +64,40 @@ export const refreshFleetAnalytics = async () => {
         throw error
     }
 }
+
+/**
+ * PATCH /Maintenance/{maintenanceId}/approve
+ * Aprueba o rechaza un mantenimiento pendiente
+ */
+export const approveMaintenance = async (maintenanceId: number, approvalStatus: "Approved" | "Rejected") => {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    if (!token) {
+        throw new Error("No authentication token found")
+    }
+
+    try {
+        const response = await fetch(`${process.env.BACKENDURL}/Maintenance/${maintenanceId}/approve`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                approval_status: approvalStatus
+            }),
+        })
+
+        if (!response.ok) {
+            const msg = await response.text().catch(() => "Failed to approve maintenance")
+            throw new Error(`Failed to approve maintenance (${response.status} - ${msg})`)
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error("Error approving maintenance:", error)
+        throw error
+    }
+}
