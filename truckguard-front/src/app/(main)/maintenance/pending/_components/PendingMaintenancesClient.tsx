@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Wrench, Truck, User, Calendar, Check, X, Edit } from "lucide-react";
+import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { approveMaintenance } from "@/lib/actions/fleetanalytics.actions";
 
 interface PendingMaintenance {
     maintenance_id: number;
@@ -45,6 +48,7 @@ interface PendingMaintenancesClientProps {
 export default function PendingMaintenancesClient({ initialData }: PendingMaintenancesClientProps) {
     const [maintenances, setMaintenances] = useState(initialData.pending_maintenances);
     const [processing, setProcessing] = useState<number | null>(null);
+    const router = useRouter();
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat("es-ES", {
@@ -68,25 +72,23 @@ export default function PendingMaintenancesClient({ initialData }: PendingMainte
         setProcessing(maintenanceId);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/Maintenance/${maintenanceId}/approve`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({
-                    approval_status: approvalStatus
-                }),
-            });
+            await approveMaintenance(maintenanceId, approvalStatus);
 
-            if (response.ok) {
-                // Remover el mantenimiento de la lista
-                setMaintenances(prev => prev.filter(m => m.maintenance_id !== maintenanceId));
+            // Mostrar notificación según el estado
+            if (approvalStatus === "Approved") {
+                toast.success("Mantenimiento aprobado exitosamente");
             } else {
-                console.error("Error al procesar la solicitud");
+                toast.success("Mantenimiento rechazado");
             }
+
+            // Remover el mantenimiento de la lista
+            setMaintenances(prev => prev.filter(m => m.maintenance_id !== maintenanceId));
+
+            // Refrescar la página para obtener los datos actualizados
+            router.refresh();
         } catch (error) {
             console.error("Error:", error);
+            toast.error("Error al procesar la solicitud");
         } finally {
             setProcessing(null);
         }
@@ -94,6 +96,7 @@ export default function PendingMaintenancesClient({ initialData }: PendingMainte
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 p-6">
+            <Toaster position="top-center" reverseOrder={false} />
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
@@ -226,14 +229,6 @@ export default function PendingMaintenancesClient({ initialData }: PendingMainte
                                     >
                                         <X className="h-4 w-4 mr-2" />
                                         {processing === maintenance.maintenance_id ? "Procesando..." : "Rechazar"}
-                                    </Button>
-
-                                    <Button
-                                        variant="outline"
-                                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                                    >
-                                        <Edit className="h-4 w-4 mr-2" />
-                                        Editar
                                     </Button>
                                 </div>
                             </CardContent>

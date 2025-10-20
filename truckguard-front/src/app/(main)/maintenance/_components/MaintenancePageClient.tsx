@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Wrench } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "react-hot-toast";
 import MaintenanceStats from "./MaintenanceStats";
 import MaintenanceFilters from "./MaintenanceFilters";
 import TruckMaintenanceCard from "./TruckMaintenanceCard";
@@ -46,6 +47,7 @@ export default function MaintenancePageClient({ initialTrucks, componentsByTruck
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-slate-900 via-gray-900 to-slate-800 p-4 lg:p-8">
+            <Toaster position="top-center" reverseOrder={false} />
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-2">
