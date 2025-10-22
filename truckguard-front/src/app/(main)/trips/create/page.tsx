@@ -177,15 +177,17 @@ export default function CreateTripPage() {
             return;
         }
 
-        // Éxito → redirigís como ya tenías:
+        // Éxito → usar datos reales del backend con alertas de riesgo
         const selectedTruck = availableTrucks.find(t => String(t.truck_id) === formData.truck_id);
+        const backendResponse = result.data; // Datos reales del backend
+
         const createdTrip = {
-            trip_id: Date.now(),
+            trip_id: backendResponse.trip || Date.now(),
             origin: tripData.origin,
             destination: tripData.destination,
             status: tripData.status,
-            distance: 0,
-            duration: "",
+            distance: backendResponse.trip_distance || 0,
+            duration: "", // Se calculará en el mapa
             driver: {
                 name: selectedTruck?.driver ? `${selectedTruck.driver.name}` : "",
                 email: "",
@@ -198,6 +200,10 @@ export default function CreateTripPage() {
                 year: selectedTruck?.year || 0,
             },
             created_at: new Date().toISOString(),
+            // Incluir datos de riesgo del backend
+            risk_warnings: backendResponse.risk_warnings || [],
+            risk_warning_message: backendResponse.risk_warning_message,
+            recommendation: backendResponse.recommendation,
         };
         try { localStorage.setItem("created_trip", JSON.stringify(createdTrip)); } catch { }
 
