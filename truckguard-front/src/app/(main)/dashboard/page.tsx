@@ -1,6 +1,8 @@
 import { getFleetAnalytics, getPendingMaintenances, refreshFleetAnalytics } from "@/lib/actions/fleetanalytics.actions"
 import { DashboardHeader, MetricsCards } from "@/components/dashboard"
 
+export const dynamic = "force-dynamic"
+
 export default async function Dashboard() {
     try {
         // Primero hacer refresh de los datos del backend
