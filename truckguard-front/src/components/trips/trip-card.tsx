@@ -46,7 +46,7 @@ export default function TripCard({ trip, onStatusChange, onDelete, onViewDetails
               Completado
             </Badge>
           )
-        case "Active":
+        case "In Course":
           return (
             <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
               <PlayCircle className="h-3 w-3 mr-1" />
@@ -74,7 +74,7 @@ export default function TripCard({ trip, onStatusChange, onDelete, onViewDetails
             key="activate"
             size="sm"
             className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => onStatusChange(trip.trip_id, "Active")}
+            onClick={() => onStatusChange(trip.trip_id, "In Course")}
           >
             <PlayCircle className="h-3 w-3 mr-1" />
             Activar
@@ -82,7 +82,7 @@ export default function TripCard({ trip, onStatusChange, onDelete, onViewDetails
         )
       }
   
-      if (trip.status === "Active") {
+      if (trip.status === "In Course") {
         buttons.push(
           <Button
             key="complete"

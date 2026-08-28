@@ -9,10 +9,11 @@ import ComponentsRadar from "./_components/ComponentsRadar";
 import MaintenanceHistory from "./_components/MaintenanceHistory";
 
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export default async function TruckDetailPage({ params }: Props) {
-    const id = Number(params.id);
+    const { id: truckId } = await params;
+    const id = Number(truckId);
     if (Number.isNaN(id)) notFound();
 
     // 1) Traer el camión, componentes actuales, historial de componentes y historial de mantenimiento

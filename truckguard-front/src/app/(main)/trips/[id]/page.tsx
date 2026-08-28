@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { use, useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,12 +25,13 @@ import { useJsApiLoader } from "@react-google-maps/api"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 
 interface TripDetailsPageProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export default function TripDetailsPage({ params }: TripDetailsPageProps) {
+    const { id } = use(params)
     const [trip, setTrip] = useState<Trip | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -45,13 +46,13 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
 
     useEffect(() => {
         loadTripDetails()
-    }, [params.id])
+    }, [id])
 
     const loadTripDetails = async () => {
         try {
             setLoading(true)
             setError(null)
-            const response = await getTrip(parseInt(params.id))
+            const response = await getTrip(parseInt(id))
             setTrip(response.trip)
         } catch (error) {
             console.error("Error loading trip details:", error)
@@ -70,7 +71,7 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                         Completado
                     </Badge>
                 )
-            case "Active":
+            case "In Course":
                 return (
                     <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         <PlayCircle className="h-3 w-3 mr-1" />
